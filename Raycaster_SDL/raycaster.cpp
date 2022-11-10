@@ -6,14 +6,31 @@
 #define HEIGHT 720
 
 struct Player {
-    int x;
-    int y;
+    float x;
+    float y;
     int radius;
     float rotation;
+    float moveSpeed;
+    float rotationSpeed;
+    int strafeSpeed;
   
 };
+
+struct DeltaTime {
+    uint32_t last_tick = 0;
+    float delta = 0;
+
+    void Calculate()
+    {
+        uint32_t tick = SDL_GetTicks();
+        delta = tick - last_tick;
+        last_tick = tick;
+    }
+};
+
 SDL_Rect tile;
 SDL_Color wallCol,gridCol;
+DeltaTime Delta;
 
 int map[8][8] = { 
                 {1,1,1,1,1,1,1,1},
@@ -42,6 +59,9 @@ void init()
     player.y = 80;
     player.radius = 16;
     player.rotation = 0;
+    player.moveSpeed = 30;
+    player.rotationSpeed = 8;
+    player.strafeSpeed = 400;
 
     //MAP
 
@@ -75,19 +95,21 @@ void input()
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_ESCAPE]) running = false;
     if (keystates[SDL_SCANCODE_F11]) fullscreen = !fullscreen;
-    if (keystates[SDL_SCANCODE_LEFT]) player.rotation-=0.1; //rotate counter clockwise
-    if (keystates[SDL_SCANCODE_RIGHT]) player.rotation += 0.1; //rotate clockwise
-    if (keystates[SDL_SCANCODE_COMMA]) player.x -= 4; //Strafe left
-    if (keystates[SDL_SCANCODE_PERIOD]) player.x += 4; //Strafe right
+    if (keystates[SDL_SCANCODE_LEFT]) player.rotation-=player.rotationSpeed*Delta.delta/1000; //rotate counter clockwise
+    if (keystates[SDL_SCANCODE_RIGHT]) player.rotation += player.rotationSpeed * Delta.delta / 1000; //rotate clockwise
+    if (keystates[SDL_SCANCODE_COMMA]) player.x -= player.strafeSpeed*Delta.delta/1000; //Strafe left
+    if (keystates[SDL_SCANCODE_PERIOD]) player.x += player.strafeSpeed * Delta.delta / 1000; //Strafe right
     if (keystates[SDL_SCANCODE_UP]) //Move forward ("with" rotation vector)
     {
-        player.x += (cos(player.rotation) * player.radius);
-        player.y += (sin(player.rotation) * player.radius);
+
+        player.x += (cos(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
+        player.y += (sin(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
     }
     if (keystates[SDL_SCANCODE_DOWN]) //Move backward ("against" rotation vector)
     {
-        player.x -= cos(player.rotation) * player.radius;
-        player.y -= sin(player.rotation) * player.radius;
+        
+        player.x -= (cos(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
+        player.y -= (sin(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
     }
 
 }
@@ -174,6 +196,9 @@ int main(int argc, char* argv[])
     init();
     while (running) 
     {
+       
+        Delta.Calculate();
+        std::cout << Delta.delta<<std::endl;
         
         lastFrame = SDL_GetTicks();
         if (lastFrame >= (lastTime + 1000))
@@ -182,7 +207,7 @@ int main(int argc, char* argv[])
             fps = frameCount;
             frameCount = 0;
         }
-        std::cout << fps << std::endl;
+        //std::cout << fps << std::endl;
         
         update();
         input();
