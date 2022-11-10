@@ -4,6 +4,13 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
+struct Player {
+    int x;
+    int y;
+    int hight;
+    int width;
+};
+
 int map[8][8] = { 
                 {1,1,1,1,1,1,1,1},
                 {1,1,1,0,0,0,0,1},
@@ -21,6 +28,15 @@ SDL_Renderer* renderer;
 SDL_Window* window;
 
 int frameCount, timerFPS, lastFrame, fps;
+Player player;
+
+void init()
+{
+    player.x = 80;
+    player.y = 80;
+    player.width = 32;
+    player.hight = 32;
+}
 
 void update()
 {
@@ -38,6 +54,10 @@ void input()
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_ESCAPE]) running = false;
     if (keystates[SDL_SCANCODE_F11]) fullscreen = !fullscreen;
+    if (keystates[SDL_SCANCODE_LEFT]) player.x-=4;
+    if (keystates[SDL_SCANCODE_RIGHT]) player.x += 4;
+    if (keystates[SDL_SCANCODE_UP]) player.y -= 4;
+    if (keystates[SDL_SCANCODE_DOWN]) player.y += 4;
 }
 
 void draw() 
@@ -46,6 +66,14 @@ void draw()
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer,NULL);
     SDL_Rect rect;
+    SDL_Rect playerBody;
+
+    playerBody.x = player.x- (player.width/2);
+    playerBody.y = player.y- (player.hight/2);
+    playerBody.w = player.width;
+    playerBody.h = player.hight;
+
+
     rect.x = 0;
     rect.y = 0;
     rect.w = 80;
@@ -70,11 +98,9 @@ void draw()
         rect.y= 0;
        
     }
-    
-    /*SDL_RenderFillRect(renderer, &rect);
-    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);*/
-    //SDL_RenderDrawLine(renderer, 5, 5, 100, 120);
-    
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+
+    SDL_RenderFillRect(renderer, &playerBody);
 
     frameCount++;
     timerFPS = SDL_GetTicks() - lastFrame;
@@ -95,6 +121,7 @@ int main(int argc, char* argv[])
     SDL_SetWindowTitle(window, "RAYCASTER");
     SDL_ShowCursor(1);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
+    init();
     while (running) 
     {
         
