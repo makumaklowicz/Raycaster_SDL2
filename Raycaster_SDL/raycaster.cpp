@@ -9,6 +9,7 @@ struct Player {
     int x;
     int y;
     int radius;
+    float rotation;
   
 };
 SDL_Rect tile;
@@ -22,7 +23,7 @@ int map[8][8] = {
                 {1,0,0,0,0,1,1,1},
                 {1,0,0,0,1,1,0,1},
                 {1,1,0,0,0,0,0,1},
-                {1,1,1,1,1,1,1,1,} };
+                {1,1,1,1,1,1,1,1} };
 
 
 bool running, fullscreen;
@@ -40,6 +41,7 @@ void init()
     player.x = 80;
     player.y = 80;
     player.radius = 16;
+    player.rotation = 0;
 
     //MAP
 
@@ -73,13 +75,13 @@ void input()
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_ESCAPE]) running = false;
     if (keystates[SDL_SCANCODE_F11]) fullscreen = !fullscreen;
-    if (keystates[SDL_SCANCODE_LEFT]) player.x-=4;
-    if (keystates[SDL_SCANCODE_RIGHT]) player.x += 4;
+    if (keystates[SDL_SCANCODE_LEFT]) player.rotation-=0.1;
+    if (keystates[SDL_SCANCODE_RIGHT]) player.rotation += 0.1;
     if (keystates[SDL_SCANCODE_UP]) player.y -= 4;
     if (keystates[SDL_SCANCODE_DOWN]) player.y += 4;
 }
 
-void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius)
+void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius, float rotation)
 {
     
     for (int w = 0; w < radius * 2; w++)
@@ -94,8 +96,10 @@ void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius)
                 SDL_RenderDrawPoint(renderer, x + dx, y + dy);
             }
         }
+        int xr = cos(rotation) * (radius);
+        int yr = sin(rotation) * (radius);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderDrawLine(renderer, x, y, x, (y - radius+((radius/10))));
+        SDL_RenderDrawLine(renderer, x, y, x+xr, y+yr);
     }
 }
 
@@ -134,7 +138,7 @@ void draw()
     SDL_RenderFillRect(renderer,NULL);
 
     drawMap(renderer,map,640,640,tile,wallCol,gridCol);
-    drawPlayer(renderer,player.x, player.y, player.radius);
+    drawPlayer(renderer,player.x, player.y, player.radius,player.rotation);
 
     frameCount++;
     timerFPS = SDL_GetTicks() - lastFrame;
