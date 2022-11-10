@@ -75,10 +75,21 @@ void input()
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_ESCAPE]) running = false;
     if (keystates[SDL_SCANCODE_F11]) fullscreen = !fullscreen;
-    if (keystates[SDL_SCANCODE_LEFT]) player.rotation-=0.1;
-    if (keystates[SDL_SCANCODE_RIGHT]) player.rotation += 0.1;
-    if (keystates[SDL_SCANCODE_UP]) player.y -= 4;
-    if (keystates[SDL_SCANCODE_DOWN]) player.y += 4;
+    if (keystates[SDL_SCANCODE_LEFT]) player.rotation-=0.1; //rotate counter clockwise
+    if (keystates[SDL_SCANCODE_RIGHT]) player.rotation += 0.1; //rotate clockwise
+    if (keystates[SDL_SCANCODE_COMMA]) player.x -= 4; //Strafe left
+    if (keystates[SDL_SCANCODE_PERIOD]) player.x += 4; //Strafe right
+    if (keystates[SDL_SCANCODE_UP]) //Move forward ("with" rotation vector)
+    {
+        player.x += (cos(player.rotation) * player.radius);
+        player.y += (sin(player.rotation) * player.radius);
+    }
+    if (keystates[SDL_SCANCODE_DOWN]) //Move backward ("against" rotation vector)
+    {
+        player.x -= cos(player.rotation) * player.radius;
+        player.y -= sin(player.rotation) * player.radius;
+    }
+
 }
 
 void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius, float rotation)
