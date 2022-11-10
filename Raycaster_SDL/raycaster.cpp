@@ -1,5 +1,6 @@
 #include "SDL.h"
 #include <iostream>
+#include <cmath>
 
 #define WIDTH 1280
 #define HEIGHT 720
@@ -7,8 +8,8 @@
 struct Player {
     int x;
     int y;
-    int hight;
-    int width;
+    int radius;
+  
 };
 
 int map[8][8] = { 
@@ -34,8 +35,7 @@ void init()
 {
     player.x = 80;
     player.y = 80;
-    player.width = 32;
-    player.hight = 32;
+    player.radius = 16;
 }
 
 void update()
@@ -60,18 +60,35 @@ void input()
     if (keystates[SDL_SCANCODE_DOWN]) player.y += 4;
 }
 
+void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius)
+{
+    
+    for (int w = 0; w < radius * 2; w++)
+    {
+        for (int h = 0; h < radius * 2; h++)
+        {
+            int dx = radius - w; 
+            int dy = radius - h;
+            if ((dx * dx + dy * dy) <= (radius * radius))
+            {
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                SDL_RenderDrawPoint(renderer, x + dx, y + dy);
+            }
+        }
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderDrawLine(renderer, x, y, x, (y - radius+((radius/10))));
+    }
+}
+
+
+
 void draw() 
 {
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer,NULL);
     SDL_Rect rect;
-    SDL_Rect playerBody;
 
-    playerBody.x = player.x- (player.width/2);
-    playerBody.y = player.y- (player.hight/2);
-    playerBody.w = player.width;
-    playerBody.h = player.hight;
 
 
     rect.x = 0;
@@ -98,9 +115,9 @@ void draw()
         rect.y= 0;
        
     }
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    
 
-    SDL_RenderFillRect(renderer, &playerBody);
+    drawPlayer(renderer,player.x, player.y, player.radius);
 
     frameCount++;
     timerFPS = SDL_GetTicks() - lastFrame;
@@ -110,6 +127,7 @@ void draw()
     }
     SDL_RenderPresent(renderer);
 }
+
 
 int main(int argc, char* argv[])
 {
@@ -137,6 +155,7 @@ int main(int argc, char* argv[])
         update();
         input();
         draw();
+       
 
     }
     SDL_DestroyRenderer(renderer);
