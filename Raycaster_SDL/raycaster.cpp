@@ -11,6 +11,8 @@ struct Player {
     int radius;
   
 };
+SDL_Rect tile;
+SDL_Color wallCol,gridCol;
 
 int map[8][8] = { 
                 {1,1,1,1,1,1,1,1},
@@ -33,9 +35,26 @@ Player player;
 
 void init()
 {
+    //PLAYER
+
     player.x = 80;
     player.y = 80;
     player.radius = 16;
+
+    //MAP
+
+    tile.x = 0;
+    tile.y = 0;
+    tile.w = 80;
+    tile.h = 80;
+    wallCol.r = 255;
+    wallCol.g = 0;
+    wallCol.b = 0;
+    wallCol.a = 255;
+    gridCol.r = 0;
+    gridCol.g = 0;
+    gridCol.b = 0;
+    gridCol.a = 255;
 }
 
 void update()
@@ -80,6 +99,32 @@ void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius)
     }
 }
 
+void drawMap(SDL_Renderer* renderer, int map[8][8],int map_width, int map_height,SDL_Rect tile_param,SDL_Color wall_col, SDL_Color grid_col)
+{
+
+    for (int h = 0; h < map_width; h += tile_param.w)
+    {
+
+        for (int i = 0; i < map_height; i += tile_param.h)
+        {
+            if (map[i / 80][h / 80] == 1)
+            {
+                SDL_SetRenderDrawColor(renderer, wall_col.r, wall_col.g, wall_col.b, wall_col.a);
+                SDL_RenderFillRect(renderer, &tile_param);
+
+            }
+            SDL_SetRenderDrawColor(renderer, grid_col.r, grid_col.g, grid_col.b, grid_col.a);
+            SDL_RenderDrawRect(renderer, &tile_param);
+
+            tile_param.y += tile_param.h;
+        }
+        tile_param.x += tile_param.w;
+        tile_param.y = 0;
+
+    }
+
+}
+
 
 
 void draw() 
@@ -87,36 +132,8 @@ void draw()
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderFillRect(renderer,NULL);
-    SDL_Rect rect;
 
-
-
-    rect.x = 0;
-    rect.y = 0;
-    rect.w = 80;
-    rect.h = 80;
-    for (int h=0;h < 640;h+=80)
-    {
-       
-        for (int i = 0; i < 640; i += 80)
-        {
-            if (map[i / 80][h / 80] == 1)
-            {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                SDL_RenderFillRect(renderer, &rect);
-               
-            }
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-            SDL_RenderDrawRect(renderer, &rect);
-            
-            rect.y += 80;
-        }
-        rect.x += 80;
-        rect.y= 0;
-       
-    }
-    
-
+    drawMap(renderer,map,640,640,tile,wallCol,gridCol);
     drawPlayer(renderer,player.x, player.y, player.radius);
 
     frameCount++;
