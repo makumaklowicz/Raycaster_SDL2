@@ -4,6 +4,17 @@
 #define WIDTH 1280
 #define HEIGHT 720
 
+int map[8][8] = { 
+                {1,1,1,1,1,1,1,1},
+                {1,1,1,0,0,0,0,1},
+                {1,0,1,0,0,0,0,1},
+                {1,0,1,1,0,0,0,1},
+                {1,0,0,0,0,1,1,1},
+                {1,0,0,0,1,1,0,1},
+                {1,1,0,0,0,0,0,1},
+                {1,1,1,1,1,1,1,1,} };
+
+
 bool running, fullscreen;
 
 SDL_Renderer* renderer;
@@ -32,15 +43,37 @@ void input()
 void draw() 
 {
 
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderFillRect(renderer,NULL);
     SDL_Rect rect;
-    rect.x = rect.y = 0;
-    rect.w = WIDTH;
-    rect.h = HEIGHT;
-    SDL_RenderFillRect(renderer, &rect);
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_RenderDrawLine(renderer, 5, 5, 100, 120);
+    rect.x = 0;
+    rect.y = 0;
+    rect.w = 80;
+    rect.h = 80;
+    for (int h=0;h < 640;h+=80)
+    {
+       
+        for (int i = 0; i < 640; i += 80)
+        {
+            if (map[i / 80][h / 80] == 1)
+            {
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                SDL_RenderFillRect(renderer, &rect);
+               
+            }
+            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            SDL_RenderDrawRect(renderer, &rect);
+            
+            rect.y += 80;
+        }
+        rect.x += 80;
+        rect.y= 0;
+       
+    }
+    
+    /*SDL_RenderFillRect(renderer, &rect);
+    SDL_SetRenderDrawColor(renderer, 0, 255, 255, 255);*/
+    //SDL_RenderDrawLine(renderer, 5, 5, 100, 120);
     
 
     frameCount++;
