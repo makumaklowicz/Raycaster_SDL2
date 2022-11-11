@@ -57,7 +57,7 @@ void init()
     player.y = 200;
     player.radius = 16;
     player.rotation = 0;
-    player.moveSpeed = 30;
+    player.moveSpeed = 20;
     player.rotationSpeed = 8;
 
     //MAP
@@ -99,6 +99,14 @@ bool collisionDetectionX(float addX)
     }
     else
     {
+        if (addX > 0) {
+            xcoord = (player.x/tile.w);
+            player.x = ((xcoord*80)- player.radius) + tile.w;
+        };
+        if (addX < 0) {
+            xcoord = (player.x / tile.w);
+            player.x = ((xcoord * 80)+ player.radius);
+        };
         return true;
     }
 }
@@ -121,6 +129,14 @@ bool collisionDetectionY(float addY)
     }
     else
     {
+        if (addY > 0) {
+            ycoord = (player.y / tile.h);
+            player.y = ((ycoord * 80) - player.radius) + tile.w;
+        };
+        if (addY < 0) {
+            ycoord = (player.y / tile.h);
+            player.y = ((ycoord * 80) + player.radius);
+        };
         return true;
     }
 }
