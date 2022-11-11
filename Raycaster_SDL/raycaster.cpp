@@ -82,10 +82,25 @@ void update()
     if (!fullscreen) SDL_SetWindowFullscreen(window, 0);
 }
 
-bool collisionDetection(float addX, float addY)
+bool collisionDetectionX(float addX)
 {
     int xcoord, ycoord;
+    ycoord = player.y/tile.h;
     xcoord = (player.x + addX) / tile.w;
+    if (map[xcoord][ycoord] == 0)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
+bool collisionDetectionY(float addY)
+{
+    int xcoord, ycoord;
+    xcoord = player.x/tile.w;
     ycoord = (player.y + addY) / tile.h;
     if (map[xcoord][ycoord] == 0)
     {
@@ -117,11 +132,15 @@ void input()
         rotation -= M_PI / 2;
         Xadd += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
         Yadd += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
-        if (collisionDetection(Xadd, Yadd) == false)
+        if (collisionDetectionX(Xadd) == false)
         {
             player.x += Xadd;
+        }
+        if (collisionDetectionY(Yadd) == false)
+        {
             player.y += Yadd;
         }
+        
     }
     if (keystates[SDL_SCANCODE_PERIOD]) //Strafe right
     {
@@ -131,9 +150,12 @@ void input()
         rotation += M_PI / 2;
         Xadd += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
         Yadd += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
-        if (collisionDetection(Xadd, Yadd) == false)
+        if (collisionDetectionX(Xadd) == false)
         {
             player.x += Xadd;
+        }
+        if (collisionDetectionY(Yadd) == false)
+        {
             player.y += Yadd;
         }
     }
@@ -143,9 +165,12 @@ void input()
         Xadd = Yadd = 0;
         Xadd += (cos(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
         Yadd += (sin(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
-        if (collisionDetection(Xadd, Yadd) == false)
+        if (collisionDetectionX(Xadd) == false)
         {
             player.x += Xadd;
+        }
+        if (collisionDetectionY(Yadd) == false)
+        {
             player.y += Yadd;
         }
     }
@@ -155,9 +180,12 @@ void input()
         Xadd = Yadd = 0;
         Xadd -= (cos(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
         Yadd -= (sin(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
-        if (collisionDetection(Xadd, Yadd) == false)
+        if (collisionDetectionX(Xadd) == false)
         {
             player.x += Xadd;
+        }
+        if (collisionDetectionY(Yadd) == false)
+        {
             player.y += Yadd;
         }
     }
