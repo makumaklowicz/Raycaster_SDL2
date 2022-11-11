@@ -3,7 +3,7 @@
 #include <cmath>
 
 #define WIDTH 1280
-#define HEIGHT 720
+#define HEIGHT 640
 
 struct Player {
     float x;
@@ -66,13 +66,13 @@ void init()
     tile.y = 0;
     tile.w = 80;
     tile.h = 80;
-    wallCol.r = 255;
+    wallCol.r = 0;
     wallCol.g = 0;
-    wallCol.b = 0;
+    wallCol.b = 150;
     wallCol.a = 255;
     gridCol.r = 0;
     gridCol.g = 0;
-    gridCol.b = 0;
+    gridCol.b = 100;
     gridCol.a = 255;
 }
 
@@ -175,13 +175,13 @@ void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius, float rotation
             int dy = radius - h;
             if ((dx * dx + dy * dy) <= (radius * radius))
             {
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 220, 220, 0, 255);
                 SDL_RenderDrawPoint(renderer, x + dx, y + dy);
             }
         }
         int xr = cos(rotation) * (radius);
         int yr = sin(rotation) * (radius);
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 230, 75, 0, 255);
         SDL_RenderDrawLine(renderer, x, y, x+xr, y+yr);
     }
 }
@@ -217,7 +217,7 @@ void drawMap(SDL_Renderer* renderer, int map[8][8],int map_width, int map_height
 void draw() 
 {
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 0);
     SDL_RenderFillRect(renderer,NULL);
 
     drawMap(renderer,map,640,640,tile,wallCol,gridCol);
