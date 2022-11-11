@@ -86,7 +86,13 @@ bool collisionDetectionX(float addX)
 {
     int xcoord, ycoord;
     ycoord = player.y/tile.h;
-    xcoord = (player.x + addX) / tile.w;
+    if (addX < 0) {
+        xcoord = (player.x - player.radius + addX) / tile.w;
+    }
+    else
+    {
+        xcoord = (player.x + player.radius + addX) / tile.w;
+    }
     if (map[xcoord][ycoord] == 0)
     {
         return false;
@@ -101,7 +107,14 @@ bool collisionDetectionY(float addY)
 {
     int xcoord, ycoord;
     xcoord = player.x/tile.w;
-    ycoord = (player.y + addY) / tile.h;
+   // ycoord = (player.y + addY) / tile.h;
+    if (addY < 0) {
+        ycoord = (player.y - player.radius + addY) / tile.h;
+    }
+    else
+    {
+        ycoord = (player.y + player.radius + addY) / tile.h;
+    }
     if (map[xcoord][ycoord] == 0)
     {
         return false;
