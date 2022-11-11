@@ -53,8 +53,8 @@ void init()
 {
     //PLAYER
 
-    player.x = 80;
-    player.y = 80;
+    player.x = 400;
+    player.y = 200;
     player.radius = 16;
     player.rotation = 0;
     player.moveSpeed = 30;
@@ -82,6 +82,21 @@ void update()
     if (!fullscreen) SDL_SetWindowFullscreen(window, 0);
 }
 
+bool collisionDetection(float addX, float addY)
+{
+    int xcoord, ycoord;
+    xcoord = (player.x + addX) / tile.w;
+    ycoord = (player.y + addY) / tile.h;
+    if (map[xcoord][ycoord] == 0)
+    {
+        return false;
+    }
+    else
+    {
+        return true;
+    }
+}
+
 void input() 
 {
     SDL_Event e;
@@ -96,29 +111,55 @@ void input()
     if (keystates[SDL_SCANCODE_RIGHT]) player.rotation += player.rotationSpeed * Delta.delta / 1000; //rotate clockwise
     if (keystates[SDL_SCANCODE_COMMA]) //Strafe left
     {
+        float Xadd, Yadd;
+        Xadd = Yadd = 0;
         float rotation = player.rotation;
         rotation -= M_PI / 2;
-        player.x += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
-        player.y += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        Xadd += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        Yadd += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        if (collisionDetection(Xadd, Yadd) == false)
+        {
+            player.x += Xadd;
+            player.y += Yadd;
+        }
     }
     if (keystates[SDL_SCANCODE_PERIOD]) //Strafe right
     {
+        float Xadd, Yadd;
+        Xadd = Yadd = 0;
         float rotation = player.rotation;
         rotation += M_PI / 2;
-        player.x += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
-        player.y += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        Xadd += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        Yadd += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        if (collisionDetection(Xadd, Yadd) == false)
+        {
+            player.x += Xadd;
+            player.y += Yadd;
+        }
     }
     if (keystates[SDL_SCANCODE_UP]) //Move forward ("with" rotation vector)
     {
-
-        player.x += (cos(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
-        player.y += (sin(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
+        float Xadd, Yadd;
+        Xadd = Yadd = 0;
+        Xadd += (cos(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
+        Yadd += (sin(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
+        if (collisionDetection(Xadd, Yadd) == false)
+        {
+            player.x += Xadd;
+            player.y += Yadd;
+        }
     }
     if (keystates[SDL_SCANCODE_DOWN]) //Move backward ("against" rotation vector)
     {
-        
-        player.x -= (cos(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
-        player.y -= (sin(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
+        float Xadd, Yadd;
+        Xadd = Yadd = 0;
+        Xadd -= (cos(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
+        Yadd -= (sin(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
+        if (collisionDetection(Xadd, Yadd) == false)
+        {
+            player.x += Xadd;
+            player.y += Yadd;
+        }
     }
 
 }
@@ -153,7 +194,7 @@ void drawMap(SDL_Renderer* renderer, int map[8][8],int map_width, int map_height
 
         for (int i = 0; i < map_height; i += tile_param.h)
         {
-            if (map[i / 80][h / 80] == 1)
+            if (map[h / 80][i / 80] == 1)
             {
                 SDL_SetRenderDrawColor(renderer, wall_col.r, wall_col.g, wall_col.b, wall_col.a);
                 SDL_RenderFillRect(renderer, &tile_param);
