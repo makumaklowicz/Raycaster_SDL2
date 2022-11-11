@@ -279,8 +279,8 @@ int main(int argc, char* argv[])
     running = 1;
     fullscreen = 0;
     static int lastTime = 0;
-    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) std::cout << "B³¹d inicjalizacji SDLa" << std::endl;
-    if (SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer) < 0) std::cout << "B³¹d tworzenia okna" << std::endl;
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0) std::cout << "SDL Init Error" << std::endl;
+    if (SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer) < 0) std::cout << "SDL Window Create Failed" << std::endl;
     SDL_SetWindowTitle(window, "RAYCASTER");
     SDL_ShowCursor(1);
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
