@@ -4,6 +4,7 @@
 
 #define WIDTH 1280
 #define HEIGHT 640
+#define PI 3.14159
 
 struct Player {
     float x;
@@ -42,6 +43,8 @@ int map[8][8] = {
 
 
 bool running, fullscreen;
+int viewDepth=8;
+
 
 SDL_Renderer* renderer;
 SDL_Window* window;
@@ -82,9 +85,69 @@ void update()
     if (!fullscreen) SDL_SetWindowFullscreen(window, 0);
 }
 
+void castRays()
+{
+    int xRayLength, yRayLength;
+    xRayLength = yRayLength = 0;
+    int xc = player.x / 80;
+    int yc = player.y / 80;
+    int xfloat=0;
+    int yfloat=0;
+    int rayl=0;
+    float ctg,tg;
+
+    //Horizontal check
+    if (player.rotation > PI)
+    {
+        ctg = 1 / tan(player.rotation - PI);
+        yfloat = 80-((player.y / 80 - yc) * 80);
+        xfloat = yfloat*ctg;
+        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+    }
+    if (player.rotation < PI)
+    {
+        ctg = 1 / tan(PI-player.rotation);
+        yfloat = (player.y / 80 - yc) * 80;
+        xfloat = yfloat * ctg;
+        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+    }
+
+    //Vertical check
+    if (player.rotation >3 * PI/2 && player.rotation < 2 * PI || player.rotation < PI/2&& player.rotation >0)
+    {
+       
+        tg = tan(player.rotation);
+        xfloat = 80 - ((player.x / 80 - xc) * 80);
+        yfloat = xfloat * tg;
+        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+    }
+    if (player.rotation < 3*PI/2 && player.rotation>PI/2)
+    {
+        tg = tan(player.rotation);
+        xfloat = (player.x / 80 - xc) * 80;
+        yfloat = xfloat * tg;
+        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+
+    }
+    if (player.rotation == PI/2|| player.rotation == 3 * PI / 2)
+    {
+        rayl = 0;
+    }
+    if (player.rotation == PI || player.rotation == 0)
+    {
+        rayl = 0;
+    }
+
+    //Check which ray collision is closer to player
+    xRayLength = cos(player.rotation) * rayl;
+    yRayLength = -sin(player.rotation) * rayl;
+    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    SDL_RenderDrawLine(renderer, player.x, player.y, player.x+ xRayLength, player.y+ yRayLength);
+}
+
 bool collisionDetectionX(float addX)
 {
-    int xcoord, ycoord;
+ int xcoord, ycoord;
     ycoord = player.y/tile.h;
     if (addX < 0) {
         xcoord = (player.x - player.radius + addX) / tile.w;
@@ -93,9 +156,13 @@ bool collisionDetectionX(float addX)
     {
         xcoord = (player.x + player.radius + addX) / tile.w;
     }
+    int suppCordX = (player.x - 80) / 80;
+    int suppCordY = (player.y + 80) / 80;
+    int altsuppCordY = (player.y - 80) / 80;
     if (map[xcoord][ycoord] == 0)
     {
-        return false;
+            return false;
+        
     }
     else
     {
@@ -115,7 +182,6 @@ bool collisionDetectionY(float addY)
 {
     int xcoord, ycoord;
     xcoord = player.x/tile.w;
-   // ycoord = (player.y + addY) / tile.h;
     if (addY < 0) {
         ycoord = (player.y - player.radius + addY) / tile.h;
     }
@@ -151,15 +217,38 @@ void input()
     const Uint8* keystates = SDL_GetKeyboardState(NULL);
     if (keystates[SDL_SCANCODE_ESCAPE]) running = false;
     if (keystates[SDL_SCANCODE_F11]) fullscreen = !fullscreen;
-    if (keystates[SDL_SCANCODE_LEFT]) player.rotation-=player.rotationSpeed*Delta.delta/1000; //rotate counter clockwise
-    if (keystates[SDL_SCANCODE_RIGHT]) player.rotation += player.rotationSpeed * Delta.delta / 1000; //rotate clockwise
+    if (keystates[SDL_SCANCODE_LEFT])//rotate counter clockwise
+    {
+        float rotation= player.rotationSpeed * Delta.delta / 1000;
+        if (player.rotation+rotation >= 2 * PI) {
+            player.rotation = 0;
+            //player.rotation += player.rotationSpeed * Delta.delta / 1000;
+        }
+        else
+        {
+            player.rotation += rotation;
+        }
+    }
+    if (keystates[SDL_SCANCODE_RIGHT])//rotate clockwise
+    {
+        float rotation=player.rotationSpeed* Delta.delta / 1000;
+        if (player.rotation-rotation <= 0)
+        {
+            player.rotation = 2 * PI-0.00001;
+           // player.rotation -= player.rotationSpeed * Delta.delta / 1000;
+        }
+        else
+        {
+            player.rotation -= rotation;
+        }
+    }//rotate clockwise
     if (keystates[SDL_SCANCODE_COMMA]) //Strafe left
     {
         float Xadd, Yadd;
         Xadd = Yadd = 0;
         float rotation = player.rotation;
-        rotation -= M_PI / 2;
-        Xadd += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        rotation -= PI / 2;
+        Xadd -= (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
         Yadd += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
         if (collisionDetectionX(Xadd) == false)
         {
@@ -176,8 +265,8 @@ void input()
         float Xadd, Yadd;
         Xadd = Yadd = 0;
         float rotation = player.rotation;
-        rotation += M_PI / 2;
-        Xadd += (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
+        rotation += PI / 2;
+        Xadd -= (cos(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
         Yadd += (sin(rotation) * player.radius) * Delta.delta / 1000 * player.moveSpeed;
         if (collisionDetectionX(Xadd) == false)
         {
@@ -193,7 +282,7 @@ void input()
         float Xadd, Yadd;
         Xadd = Yadd = 0;
         Xadd += (cos(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
-        Yadd += (sin(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
+        Yadd -= (sin(player.rotation) * player.radius)*Delta.delta/1000* player.moveSpeed;
         if (collisionDetectionX(Xadd) == false)
         {
             player.x += Xadd;
@@ -208,7 +297,7 @@ void input()
         float Xadd, Yadd;
         Xadd = Yadd = 0;
         Xadd -= (cos(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
-        Yadd -= (sin(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
+        Yadd += (sin(player.rotation) * player.radius) * Delta.delta/1000 * player.moveSpeed;
         if (collisionDetectionX(Xadd) == false)
         {
             player.x += Xadd;
@@ -237,7 +326,7 @@ void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius, float rotation
             }
         }
         int xr = cos(rotation) * (radius);
-        int yr = sin(rotation) * (radius);
+        int yr = -sin(rotation) * (radius);
         SDL_SetRenderDrawColor(renderer, 230, 75, 0, 255);
         SDL_RenderDrawLine(renderer, x, y, x+xr, y+yr);
     }
@@ -279,6 +368,8 @@ void draw()
 
     drawMap(renderer,map,640,640,tile,wallCol,gridCol);
     drawPlayer(renderer,player.x, player.y, player.radius,player.rotation);
+    castRays();
+    std::cout << player.rotation << std::endl;
 
     frameCount++;
     timerFPS = SDL_GetTicks() - lastFrame;
@@ -305,7 +396,7 @@ int main(int argc, char* argv[])
     {
        
         Delta.Calculate();
-        std::cout << Delta.delta<<std::endl;
+        //std::cout << Delta.delta<<std::endl;
         
         lastFrame = SDL_GetTicks();
         if (lastFrame >= (lastTime + 1000))
