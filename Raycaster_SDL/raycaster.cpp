@@ -93,7 +93,7 @@ void castRays()
     int yc = player.y / 80;
     int xfloat=0;
     int yfloat=0;
-    int rayl=0;
+    int rayl=0, raylV=0, raylH=0;
     float ctg,tg;
 
     //Horizontal check
@@ -102,14 +102,25 @@ void castRays()
         ctg = 1 / tan(player.rotation - PI);
         yfloat = 80-((player.y / 80 - yc) * 80);
         xfloat = yfloat*ctg;
-        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+        raylH = sqrt(xfloat * xfloat + yfloat * yfloat);
     }
     if (player.rotation < PI)
     {
         ctg = 1 / tan(PI-player.rotation);
         yfloat = (player.y / 80 - yc) * 80;
         xfloat = yfloat * ctg;
-        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+        raylH = sqrt(xfloat * xfloat + yfloat * yfloat);
+    }
+    if (player.rotation == PI)
+    {
+
+        raylH = 80 - ((player.x / 80 - xc) * 80);
+    }
+    if (player.rotation ==0 || (player.rotation < 2*PI && player.rotation > 2 * PI-0.00002))
+    {
+      
+        raylH = 80- (player.x / 80 - xc) * 80;
+        raylV = 100000;
     }
 
     //Vertical check
@@ -119,26 +130,38 @@ void castRays()
         tg = tan(player.rotation);
         xfloat = 80 - ((player.x / 80 - xc) * 80);
         yfloat = xfloat * tg;
-        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+        raylV = sqrt(xfloat * xfloat + yfloat * yfloat);
     }
     if (player.rotation < 3*PI/2 && player.rotation>PI/2)
     {
         tg = tan(player.rotation);
         xfloat = (player.x / 80 - xc) * 80;
         yfloat = xfloat * tg;
-        rayl = sqrt(xfloat * xfloat + yfloat * yfloat);
+        raylV = sqrt(xfloat * xfloat + yfloat * yfloat);
 
     }
-    if (player.rotation == PI/2|| player.rotation == 3 * PI / 2)
+    if (player.rotation < (PI/2)+0.001 && player.rotation > (PI / 2) - 0.001)
     {
-        rayl = 0;
+
+        raylV = (player.y / 80 - yc) * 80;
+
     }
-    if (player.rotation == PI || player.rotation == 0)
+    if (player.rotation < (3*PI / 2) + 0.00001 && player.rotation > (3*PI / 2) - 0.00001)
     {
-        rayl = 0;
+   
+        raylV = 80 - ((player.y / 80 - yc) * 80);
     }
 
     //Check which ray collision is closer to player
+    if (raylV > raylH)
+    {
+        rayl = raylH;
+    }
+    else
+    {
+        rayl = raylV;
+    }
+
     xRayLength = cos(player.rotation) * rayl;
     yRayLength = -sin(player.rotation) * rayl;
     SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
