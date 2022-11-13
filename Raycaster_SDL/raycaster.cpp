@@ -5,7 +5,7 @@
 #define WIDTH 1280
 #define HEIGHT 640
 #define PI 3.14159
-#define FOV 90
+#define FOV 90.000
 
 struct Player {
     float x;
@@ -60,7 +60,7 @@ void init()
     player.x = 400;
     player.y = 200;
     player.radius = 16;
-    player.rotation = 3*PI/2;
+    player.rotation = 0;
     player.moveSpeed = 20;
     player.rotationSpeed = 8;
 
@@ -99,159 +99,187 @@ void castRays()
     float ctg,tg;
     int depth = 0;
     bool piMulH = false, piMulV = false;
+    float alpha = 0;
+   
+    
 
     //Horizontal check
-    if (player.rotation > PI)
-    {
-        ctg = 1 / tan(player.rotation - PI);
-        yfloat = 80-((player.y / 80 - yc) * 80);
-        xfloat = yfloat*ctg;
-        raylH = sqrt(xfloat * xfloat + yfloat * yfloat);
-        y0 = 80;
-        x0= y0 * ctg;
-    }
-    if (player.rotation < PI)
-    {
-        ctg = 1 / tan(PI-player.rotation);
-        yfloat = (player.y / 80 - yc) * 80;
-        xfloat = yfloat * ctg;
-        raylH = sqrt(xfloat * xfloat + yfloat * yfloat);
-        y0 = -80;
-        x0 = y0 * ctg;
-    }
-    if (player.rotation> PI-0.00001&& player.rotation < PI + 0.00001)
-    {
-
-        raylH = ((player.x / 80 - xc) * 80);
-        y0 = 0;
-        x0 =80;
-        piMulH = true;
-
-    }
-    if ((player.rotation >-0.00001&& player.rotation < 0.00001) || (player.rotation < 2*PI+0.004 && player.rotation > 2 * PI-0.004))
+    for (float beta = -(FOV / 360 * 2 * PI / 2); beta < (FOV / 360 * 2 * PI / 2); beta += 0.1)
     {
       
-        raylH =  80-(player.x / 80 - xc) * 80;
-        y0 = 0;
-        x0 = 80; 
-        piMulH = true;
-    }
-   while (depth < viewDepth&&piMulH==false) {
-       xRayCord = (player.x+(cos(player.rotation) * raylH))/80;
-       if(player.rotation > PI) yRayCord = ((player.y+(-sin(player.rotation) * raylH))/80)+1;
-       if (player.rotation < PI) yRayCord = ((player.y + (-sin(player.rotation) * raylH)) / 80)-1;
-       if (yRayCord * xRayCord >= 0 && yRayCord * xRayCord <= 64)
-       {
-           if (map[xRayCord][yRayCord] == 0)
-           {
-               raylH += sqrt(y0 * y0 + x0 * x0);
-           }
-           else
-           {
-               break;
-           }
-       }
-        depth++;
-    }
-
-   while (depth < viewDepth && piMulH == true)
-   {
-       yRayCord = (player.y / 80);
-       if ((player.rotation > -0.00001 && player.rotation < 0.00001) || (player.rotation < 2 * PI && player.rotation > 2 * PI - 0.00002))xRayCord = (player.x + raylH-1)/80+1;
-       if (player.rotation > PI - 0.00001 && player.rotation < PI + 0.00001)xRayCord = (player.x - raylH + 1) / 80 - 1;
-
-       if (map[xRayCord][yRayCord] == 0)
-       {
-           raylH += x0;
-       }
-       else
-       {
-           break;
-       }
-       depth++;
-       raylV = 10000;
-   }
-
-    piMulH == false;
-    depth = 0;
-
-    //Vertical check
-    if (player.rotation >3 * PI / 2 && player.rotation < 2 * PI-0.004 || player.rotation < PI / 2 && player.rotation >0)
-    {
-       
-        tg = tan(player.rotation);
-        xfloat = 80 - ((player.x / 80 - xc) * 80);
-        yfloat = xfloat * tg;
-        raylV = sqrt(xfloat * xfloat + yfloat * yfloat);
-        x0 = -80;
-        y0 = x0 * tg;
-    }
-
-    if (player.rotation < 3*PI/2 && player.rotation>PI/2)
-    {
-        tg = tan(player.rotation);
-        xfloat = (player.x / 80 - xc) * 80;
-        yfloat = xfloat * tg;
-        raylV = sqrt(xfloat * xfloat + yfloat * yfloat);
-        x0 = 80;
-        y0 = x0 * tg;
-
-    }
-
-    if (player.rotation < (PI/2)+0.001 && player.rotation > (PI / 2) - 0.001)
-    {
-        raylV = (player.y / 80 - yc) * 80;
-        x0 = 0;
-        y0 = 80;
-        piMulV = true;
-    }
-
-    if (player.rotation < (3*PI / 2) + 0.001 && player.rotation > (3*PI / 2) - 0.001)
-    {
-        raylV = 80 - ((player.y / 80 - yc) * 80);
-        x0 = 0;
-        y0 = 80;
-        piMulV = true;
-    }
-
-    while (depth < viewDepth && piMulV==false) {
-        yRayCord = ((player.y + (-sin(player.rotation) * raylV)) / 80);
-        if (player.rotation > 3 * PI / 2 && player.rotation < 2 * PI || player.rotation < PI / 2 && player.rotation >0) xRayCord = ((player.x + (cos(player.rotation) * raylV)) / 80) + 1;
-        if (player.rotation < 3 * PI / 2 && player.rotation>PI / 2) xRayCord = ((player.x + (cos(player.rotation) * raylV)) / 80) - 1;
-
-        if (yRayCord * xRayCord >= 0 && yRayCord * xRayCord <= 64)
+        alpha = beta;
+        if (player.rotation+alpha <= 0)
         {
+            alpha += 2 * PI;
+        }
+        else if (player.rotation+alpha >= 2 * PI)
+        {
+            alpha -= 2 * PI;
+        }
+
+        xRayLength = yRayLength = 0;
+        xRayCord = 0, yRayCord = 0;
+        xc = player.x / 80;
+        yc = player.y / 80;
+        xfloat = 0;
+        yfloat = 0;
+        rayl = 0, raylV = 10000, raylH = 10000, raylFull = 0, y0 = 0, x0 = 0;
+        ctg, tg;
+        depth = 0;
+        piMulH = false, piMulV = false;
+
+
+        if (player.rotation+alpha > PI)
+        {
+            ctg = 1 / tan(player.rotation+alpha - PI);
+            yfloat = 80 - ((player.y / 80 - yc) * 80);
+            xfloat = yfloat * ctg;
+            raylH = sqrt(xfloat * xfloat + yfloat * yfloat);
+            y0 = 80;
+            x0 = y0 * ctg;
+        }
+        if (player.rotation+alpha < PI)
+        {
+            ctg = 1 / tan(PI - player.rotation+alpha);
+            yfloat = (player.y / 80 - yc) * 80;
+            xfloat = yfloat * ctg;
+            raylH = sqrt(xfloat * xfloat + yfloat * yfloat);
+            y0 = -80;
+            x0 = y0 * ctg;
+        }
+        if (player.rotation+alpha > PI - 0.00001 && player.rotation+alpha < PI + 0.00001)
+        {
+
+            raylH = ((player.x / 80 - xc) * 80);
+            y0 = 0;
+            x0 = 80;
+            piMulH = true;
+
+        }
+        if ((player.rotation+alpha > -0.00001 && player.rotation+alpha < 0.00001) || (player.rotation+alpha < 2 * PI + 0.004 && player.rotation+alpha > 2 * PI - 0.004))
+        {
+
+            raylH = 80 - (player.x / 80 - xc) * 80;
+            y0 = 0;
+            x0 = 80;
+            piMulH = true;
+        }
+        while (depth < viewDepth && piMulH == false) {
+            xRayCord = (player.x + (cos(player.rotation+alpha) * raylH)) / 80;
+            if (player.rotation+alpha > PI) yRayCord = ((player.y + (-sin(player.rotation+alpha) * raylH)) / 80) + 1;
+            if (player.rotation+alpha < PI) yRayCord = ((player.y + (-sin(player.rotation+alpha) * raylH)) / 80) - 1;
+            if (yRayCord * xRayCord >= 0 && yRayCord * xRayCord <= 64)
+            {
+                if (map[xRayCord][yRayCord] == 0)
+                {
+                    raylH += sqrt(y0 * y0 + x0 * x0);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            depth++;
+        }
+
+        while (depth < viewDepth && piMulH == true)
+        {
+            yRayCord = (player.y / 80);
+            if ((player.rotation+alpha > -0.00001 && player.rotation+alpha < 0.00001) || (player.rotation+alpha < 2 * PI && player.rotation+alpha > 2 * PI - 0.00002))xRayCord = (player.x + raylH - 1) / 80 + 1;
+            if (player.rotation+alpha > PI - 0.00001 && player.rotation+alpha < PI + 0.00001)xRayCord = (player.x - raylH + 1) / 80 - 1;
+
             if (map[xRayCord][yRayCord] == 0)
             {
-                raylV += sqrt(y0 * y0 + x0 * x0);
+                raylH += x0;
             }
             else
             {
                 break;
             }
+            depth++;
+            raylV = 10000;
         }
-        depth++;
-       
-    }
-    
-    while (depth < viewDepth && piMulV == true)
-    {
 
-        xRayCord = (player.x / 80);
-        if (player.rotation < (PI / 2) + 0.001 && player.rotation >(PI / 2) - 0.001) yRayCord = (player.y - raylV+1) / 80-1;
-        if (player.rotation < (3 * PI / 2) + 0.001 && player.rotation >(3 * PI / 2) - 0.001) yRayCord = ((player.y + raylV-1) / 80+1);
-        if (map[xRayCord][yRayCord] == 0)
-        {
-            raylV += y0;
-        }
-        else
-        {
-            break;
-        }
-        depth++;
-        raylH = 10000;
+        piMulH == false;
+        depth = 0;
 
-    }
+        //Vertical check
+        if (player.rotation+alpha > 3 * PI / 2 && player.rotation+alpha < 2 * PI - 0.004 || player.rotation+alpha < PI / 2 && player.rotation+alpha >0)
+        {
+
+            tg = tan(player.rotation+alpha);
+            xfloat = 80 - ((player.x / 80 - xc) * 80);
+            yfloat = xfloat * tg;
+            raylV = sqrt(xfloat * xfloat + yfloat * yfloat);
+            x0 = -80;
+            y0 = x0 * tg;
+        }
+
+        if (player.rotation+alpha < 3 * PI / 2 && player.rotation+alpha>PI / 2)
+        {
+            tg = tan(player.rotation+alpha);
+            xfloat = (player.x / 80 - xc) * 80;
+            yfloat = xfloat * tg;
+            raylV = sqrt(xfloat * xfloat + yfloat * yfloat);
+            x0 = 80;
+            y0 = x0 * tg;
+
+        }
+
+        if (player.rotation+alpha < (PI / 2) + 0.001 && player.rotation+alpha >(PI / 2) - 0.001)
+        {
+            raylV = (player.y / 80 - yc) * 80;
+            x0 = 0;
+            y0 = 80;
+            piMulV = true;
+        }
+
+        if (player.rotation+alpha < (3 * PI / 2) + 0.001 && player.rotation+alpha >(3 * PI / 2) - 0.001)
+        {
+            raylV = 80 - ((player.y / 80 - yc) * 80);
+            x0 = 0;
+            y0 = 80;
+            piMulV = true;
+        }
+
+        while (depth < viewDepth && piMulV == false) {
+            yRayCord = ((player.y + (-sin(player.rotation+alpha) * raylV)) / 80);
+            if (player.rotation+alpha > 3 * PI / 2 && player.rotation+alpha < 2 * PI || player.rotation+alpha < PI / 2 && player.rotation+alpha >0) xRayCord = ((player.x + (cos(player.rotation+alpha) * raylV)) / 80) + 1;
+            if (player.rotation+alpha < 3 * PI / 2 && player.rotation+alpha>PI / 2) xRayCord = ((player.x + (cos(player.rotation+alpha) * raylV)) / 80) - 1;
+
+            if (yRayCord * xRayCord >= 0 && yRayCord * xRayCord <= 64)
+            {
+                if (map[xRayCord][yRayCord] == 0)
+                {
+                    raylV += sqrt(y0 * y0 + x0 * x0);
+                }
+                else
+                {
+                    break;
+                }
+            }
+            depth++;
+
+        }
+
+        while (depth < viewDepth && piMulV == true)
+        {
+
+            xRayCord = (player.x / 80);
+            if (player.rotation+alpha < (PI / 2) + 0.001 && player.rotation+alpha >(PI / 2) - 0.001) yRayCord = (player.y - raylV + 1) / 80 - 1;
+            if (player.rotation+alpha < (3 * PI / 2) + 0.001 && player.rotation+alpha >(3 * PI / 2) - 0.001) yRayCord = ((player.y + raylV - 1) / 80 + 1);
+            if (map[xRayCord][yRayCord] == 0)
+            {
+                raylV += y0;
+            }
+            else
+            {
+                break;
+            }
+            depth++;
+            raylH = 10000;
+
+        }
 
         if (raylV > raylH)
         {
@@ -261,11 +289,12 @@ void castRays()
         {
             rayl = raylV;
         }
-    
-    xRayLength = cos(player.rotation) * rayl;
-    yRayLength = -sin(player.rotation) * rayl;
-    SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-    SDL_RenderDrawLine(renderer, player.x, player.y, player.x+ xRayLength, player.y+ yRayLength);
+
+        xRayLength = cos(player.rotation+alpha) * rayl;
+        yRayLength = -sin(player.rotation+alpha) * rayl;
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        SDL_RenderDrawLine(renderer, player.x, player.y, player.x + xRayLength, player.y + yRayLength);
+    }
 }
 
 bool collisionDetectionX(float addX)
