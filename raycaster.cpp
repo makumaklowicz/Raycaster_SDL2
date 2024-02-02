@@ -92,36 +92,13 @@ float calcDist(float ax, float ay, float bx, float by, float angle )
 
 void castRays()
 {
-    //Declaring variables
-    /*
-    int xRayLength, yRayLength;
-    int viewDepth=8;
-    xRayLength = yRayLength = 0;
-    int xRayCord=0, yRayCord = 0;
-    int xc = player.x / 80;
-    int yc = player.y / 80;
-    int xfloat=0;
-    int xtemp=0;
-    int yfloat=0;
-    int ytemp=0;
-    int rayl = 0, raylV = 10000, raylH = 10000, raylFull = 0, y0 = 0, x0 = 0;
-    float ctg,tg;
-    int depth = 0;
-    bool piMulH = false, piMulV = false;
-    float alpha = 0;
-    */
     int map_normalized_cord_x, map_normalized_cord_y, checkedDepth, viewDepth=8; 
     float ray_cord_x, ray_cord_y, ray_angle, offset_x, offset_y, shortest_hit_length;
 
-   
-    
-
     //Casting Loop
     for (float beta = (FOV / 360 * 2 * PI / 2), count=0; beta > -(FOV / 360 * 2 * PI / 2); beta -= 0.02,count++)
-    //for(int r=0;r<1;r++)
     {
         ray_angle=player.rotation+beta;
-        //loop scope variables
         
          //Angle normalization
         if (ray_angle <= 0)
@@ -135,10 +112,6 @@ void castRays()
 
         float arcTg=-1/tan(ray_angle);
         float negTg=-tan(ray_angle);
-
-        
-
-
         checkedDepth=0;
 
  //Horizontal lines check section
@@ -193,9 +166,7 @@ void castRays()
                     ray_cord_y += offset_y;
                     checkedDepth++;}
         }
-       //std::cout << "Atan: " << arcTg << " RayY: "<< ray_cord_y << " RayRot: " << ray_angle << " PlayX: " << player.x << " PlayY: " << player.y << " PlayRot: " << player.rotation << std::endl;
-    
-        
+       
        
  //Vertical lines check section
          checkedDepth=0;
@@ -250,8 +221,8 @@ void castRays()
                     ray_cord_y += offset_y;
                     checkedDepth++;}
         }
-       //std::cout << "negtan: " << negTg << " RayY: "<< ray_cord_y << " RayRot: " << ray_angle << " PlayX: " << player.x << " PlayY: " << player.y << " PlayRot: " << player.rotation << std::endl;
-           /*
+
+         /*
             Checking which ray, horizontal or vertical, is shorter
         */
         
@@ -270,7 +241,6 @@ void castRays()
             SDL_SetRenderDrawColor(renderer, 180, 0, 0, 255);
         }
         //Drawing ray
-        //SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
         SDL_RenderDrawLine(renderer, player.x, player.y, (int)ray_cord_x, (int)ray_cord_y);
         
         //Draw Pseudo3D display
@@ -282,7 +252,6 @@ void castRays()
         if(horizontal_line>640){horizontal_line=640;}
         float display_offset = 320-horizontal_line/2;
         
-        //SDL_RenderDrawLine(renderer, count*8+640, display_offset, count*8+640, horizontal_line+display_offset);
         line.h=horizontal_line;
         line.w=8;
         line.x=count*8+640;
@@ -516,8 +485,6 @@ void draw()
     drawMap(renderer,map,640,640,tile,wallCol,gridCol);
     drawPlayer(renderer,player.x, player.y, player.radius,player.rotation);
     castRays();
-    //std::cout << player.rotation << std::endl;
-
     frameCount++;
     timerFPS = SDL_GetTicks() - lastFrame;
     if (timerFPS < (1000 / 60)) 
@@ -543,8 +510,6 @@ int main(int argc, char* argv[])
     {
        
         Delta.Calculate();
-        //std::cout << Delta.delta<<std::endl;
-        
         lastFrame = SDL_GetTicks();
         if (lastFrame >= (lastTime + 1000))
         {
@@ -552,7 +517,7 @@ int main(int argc, char* argv[])
             fps = frameCount;
             frameCount = 0;
         }
-        //std::cout << fps << std::endl;
+        std::cout << fps << std::endl;
         
         update();
         input();
