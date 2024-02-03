@@ -30,11 +30,6 @@ struct DeltaTime {
     }
 };
 
-SDL_Rect tile, line;
-SDL_Color wallCol,gridCol;
-DeltaTime Delta;
-
-
 int map[mapW][mapH] = { 
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                 {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
@@ -50,7 +45,7 @@ int map[mapW][mapH] = {
                 {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
                 {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
                 {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                {1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,2,3,4,5,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
                 {1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
                 {1,1,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1}, 
                 {1,1,0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1},
@@ -69,13 +64,12 @@ int map[mapW][mapH] = {
                 {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
                 {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1} };
 
-
 bool running, fullscreen;
-
-
+SDL_Rect tile, line;
+SDL_Color wallCol,gridCol;
+DeltaTime Delta;
 SDL_Renderer* renderer;
 SDL_Window* window;
-
 int frameCount, timerFPS, lastFrame, fps;
 Player player;
 
@@ -193,7 +187,7 @@ void castRays()
 
             if ((map_normalized_cord_x>=0&&map_normalized_cord_x<=(mapW-1))&&(map_normalized_cord_y>=0&&map_normalized_cord_y<=(mapH-1)))
             {
-                if (map[map_normalized_cord_y][map_normalized_cord_x] == 1)
+                if (map[map_normalized_cord_y][map_normalized_cord_x] > 0)
                 {
                     horizon_hit_x=ray_cord_x;
                     horizon_hit_y=ray_cord_y;
@@ -248,7 +242,7 @@ void castRays()
 
             if ((map_normalized_cord_x>=0&&map_normalized_cord_x<=(mapW-1))&&(map_normalized_cord_y>=0&&map_normalized_cord_y<=(mapH-1)))
             {
-                if (map[map_normalized_cord_y][map_normalized_cord_x] == 1)
+                if (map[map_normalized_cord_y][map_normalized_cord_x] > 0)
                 {
                     vert_hit_x=ray_cord_x;
                     vert_hit_y=ray_cord_y;
@@ -307,7 +301,6 @@ void castRays()
     }
         
     }
-
 
 bool collisionDetectionX(float addX)
 {
@@ -502,7 +495,7 @@ void drawMap(SDL_Renderer* renderer, int map[mapW][mapH],int map_width, int map_
 
         for (int i = 0; i < map_height; i += tile_param.h)
         {
-            if (map[h / tile.w][i / tile.w] == 1)
+            if (map[h / tile.w][i / tile.w] > 0)
             {
                 SDL_SetRenderDrawColor(renderer, wall_col.r, wall_col.g, wall_col.b, wall_col.a);
                 SDL_RenderFillRect(renderer, &tile_param);
@@ -519,8 +512,6 @@ void drawMap(SDL_Renderer* renderer, int map[mapW][mapH],int map_width, int map_
     }
 
 }
-
-
 
 void draw() 
 {
@@ -539,7 +530,6 @@ void draw()
     }
     SDL_RenderPresent(renderer);
 }
-
 
 int main(int argc, char* argv[])
 {
