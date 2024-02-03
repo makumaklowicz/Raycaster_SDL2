@@ -5,7 +5,7 @@
 #define WIDTH 1280
 #define HEIGHT 640
 #define PI M_PI
-#define FOV 90.000
+#define FOV 60.000
 
 struct Player {
     float x;
@@ -92,11 +92,27 @@ float calcDist(float ax, float ay, float bx, float by, float angle )
 
 void castRays()
 {
+    //sky
+    line.h=320;
+    line.w=640;
+    line.x=640;
+    line.y=0;
+    SDL_SetRenderDrawColor(renderer, 51, 171, 249, 255);
+    SDL_RenderFillRect(renderer, &line);
+   
+    //floor
+    line.h=320;
+    line.w=640;
+    line.x=640;
+    line.y=320;
+    SDL_SetRenderDrawColor(renderer, 88,57,39, 255);
+    SDL_RenderFillRect(renderer, &line);
+
     int map_normalized_cord_x, map_normalized_cord_y, checkedDepth, viewDepth=8; 
     float ray_cord_x, ray_cord_y, ray_angle, offset_x, offset_y, shortest_hit_length;
 
     //Casting Loop
-    for (float beta = (FOV / 360 * 2 * PI / 2), count=0; beta > -(FOV / 360 * 2 * PI / 2); beta -= 0.02,count++)
+    for (float beta = (FOV / 360 * 2 * PI / 2), count=0; beta > -(FOV / 360 * 2 * PI / 2); beta -= 0.01,count++)
     {
         ray_angle=player.rotation+beta;
         
