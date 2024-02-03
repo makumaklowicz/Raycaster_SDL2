@@ -34,11 +34,11 @@ DeltaTime Delta;
 
 int map[8][8] = { 
                 {1,1,1,1,1,1,1,1},
-                {1,1,1,0,0,0,0,1},
+                {1,1,0,0,0,0,0,1},
                 {1,0,1,0,0,0,0,1},
-                {1,0,1,1,0,0,0,1},
+                {1,0,0,0,0,0,0,1},
                 {1,0,0,0,0,1,1,1},
-                {1,0,0,0,1,1,0,1},
+                {1,0,0,0,0,0,0,1},
                 {1,1,0,0,0,0,0,1},
                 {1,1,1,1,1,1,1,1} };
 
@@ -110,9 +110,10 @@ void castRays()
 
     int map_normalized_cord_x, map_normalized_cord_y, checkedDepth, viewDepth=8; 
     float ray_cord_x, ray_cord_y, ray_angle, offset_x, offset_y, shortest_hit_length;
+    float resolution=1;
 
     //Casting Loop
-    for (float beta = (FOV / 360 * 2 * PI / 2), count=0; beta > -(FOV / 360 * 2 * PI / 2); beta -= 0.01,count++)
+    for (float beta = (FOV / 360 * 2 * PI / 2), count=0; beta > -(FOV / 360 * 2 * PI / 2); beta -= (0.01/resolution),count++)
     {
         ray_angle=player.rotation+beta;
         
@@ -269,8 +270,8 @@ void castRays()
         float display_offset = 320-horizontal_line/2;
         
         line.h=horizontal_line;
-        line.w=8;
-        line.x=count*8+640;
+        line.w=8/resolution;
+        line.x=count*(8/resolution)+640;
         line.y=display_offset;
         SDL_RenderFillRect(renderer, &line);
         
