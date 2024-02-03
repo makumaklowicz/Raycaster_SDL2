@@ -6,6 +6,8 @@
 #define HEIGHT 640
 #define PI M_PI
 #define FOV 60.000
+#define mapH 32
+#define mapW 32
 
 struct Player {
     float x;
@@ -32,15 +34,40 @@ SDL_Rect tile, line;
 SDL_Color wallCol,gridCol;
 DeltaTime Delta;
 
-int map[8][8] = { 
-                {1,1,1,1,1,1,1,1},
-                {1,1,0,0,0,0,0,1},
-                {1,0,1,0,0,0,0,1},
-                {1,0,0,0,0,0,0,1},
-                {1,0,0,0,0,1,1,1},
-                {1,0,0,0,0,0,0,1},
-                {1,1,0,0,0,0,0,1},
-                {1,1,1,1,1,1,1,1} };
+
+int map[mapW][mapH] = { 
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,1,0,1,1,0,0,0,0,0,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1}, 
+                {1,1,0,1,1,0,0,0,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,1,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,1},
+                {1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,1},
+                {1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,1},
+                {1,1,0,0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,1},
+                {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+                {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1} };
 
 
 bool running, fullscreen;
@@ -57,7 +84,7 @@ void init()
     //PLAYER
 
     player.x = 400;
-    player.y = 200;
+    player.y = 100;
     player.radius = 16;
     player.rotation = 1.2;
     player.moveSpeed = 20;
@@ -67,8 +94,8 @@ void init()
 
     tile.x = 0;
     tile.y = 0;
-    tile.w = 80;
-    tile.h = 80;
+    tile.w = (WIDTH/2)/mapW;
+    tile.h = HEIGHT/mapH;
     wallCol.r = 0;
     wallCol.g = 0;
     wallCol.b = 150;
@@ -93,28 +120,29 @@ float calcDist(float ax, float ay, float bx, float by, float angle )
 void castRays()
 {
     //sky
-    line.h=320;
-    line.w=640;
-    line.x=640;
+    line.h=HEIGHT/2;
+    line.w=WIDTH/2;
+    line.x=WIDTH/2;
     line.y=0;
     SDL_SetRenderDrawColor(renderer, 51, 171, 249, 255);
     SDL_RenderFillRect(renderer, &line);
    
     //floor
-    line.h=320;
-    line.w=640;
-    line.x=640;
-    line.y=320;
+    line.h=HEIGHT/2;
+    line.w=WIDTH/2;
+    line.x=WIDTH/2;
+    line.y=HEIGHT/2;
     SDL_SetRenderDrawColor(renderer, 88,57,39, 255);
     SDL_RenderFillRect(renderer, &line);
 
-    int map_normalized_cord_x, map_normalized_cord_y, checkedDepth, viewDepth=8; 
+    int map_normalized_cord_x, map_normalized_cord_y, checkedDepth, viewDepth=32; 
     float ray_cord_x, ray_cord_y, ray_angle, offset_x, offset_y, shortest_hit_length;
-    float resolution=1;
+    float resolution=0.0130899/2; //resolution coefficient calculated for 640x640 pseudo3D display
 
     //Casting Loop
-    for (float beta = (FOV / 360 * 2 * PI / 2), count=0; beta > -(FOV / 360 * 2 * PI / 2); beta -= (0.01/resolution),count++)
+    for (float beta = (FOV / 360 * 2 * PI / 2), count=0; beta > -(FOV / 360 * 2 * PI / 2); beta -= (resolution),count++)
     {
+        int ray_amount=((FOV / 360 * 2 * PI / 2)/(resolution))*2;
         ray_angle=player.rotation+beta;
         
          //Angle normalization
@@ -136,41 +164,41 @@ void castRays()
 
         if (ray_angle > PI) //Looking down
         {
-            ray_cord_y= (((int)(player.y/80))*80) + 80;
+            ray_cord_y= (((int)(player.y/tile.w))*tile.w) + tile.w;
             ray_cord_x= (ray_cord_y - player.y) * arcTg + player.x;
-            offset_y = 80;
+            offset_y = tile.w;
             offset_x = offset_y * arcTg;
         }
         if (ray_angle < PI) //Looking up
         {
-            ray_cord_y= (((int)(player.y/80))*80) - 0.0001;
+            ray_cord_y= (((int)(player.y/tile.w))*tile.w) - 0.0001;
             ray_cord_x= (ray_cord_y - player.y) * arcTg + player.x;
-            offset_y = -80;
+            offset_y = -tile.w;
             offset_x = offset_y * arcTg;
         }
         if (ray_angle == PI || ray_angle == 0 || ray_angle >= 2 * PI) //Orthogonal left or right (means no horizontal collision possible)
         {
             ray_cord_x=player.x;
             ray_cord_y=player.y;
-            checkedDepth=8;
+            checkedDepth=viewDepth;
         }
         
             //Looking for horizontal ray collision
         
-        while (checkedDepth < 8) {
-            map_normalized_cord_x = (int)(ray_cord_x/80);
-            map_normalized_cord_y = (int)(ray_cord_y/80);
+        while (checkedDepth < viewDepth) {
+            map_normalized_cord_x = (int)(ray_cord_x/tile.w);
+            map_normalized_cord_y = (int)(ray_cord_y/tile.w);
             int map_cords_multiplication = map_normalized_cord_x  * map_normalized_cord_y;
             
 
-            if ((map_normalized_cord_x>=0&&map_normalized_cord_x<=7)&&(map_normalized_cord_y>=0&&map_normalized_cord_y<=7))
+            if ((map_normalized_cord_x>=0&&map_normalized_cord_x<=(mapW-1))&&(map_normalized_cord_y>=0&&map_normalized_cord_y<=(mapH-1)))
             {
-                if (map[map_normalized_cord_x][map_normalized_cord_y] == 1)
+                if (map[map_normalized_cord_y][map_normalized_cord_x] == 1)
                 {
                     horizon_hit_x=ray_cord_x;
                     horizon_hit_y=ray_cord_y;
                     horizon_ray_length=calcDist(player.x, player.y, horizon_hit_x, horizon_hit_y, ray_angle);
-                    checkedDepth=8;
+                    checkedDepth=viewDepth;
                 }
                 else
                 {
@@ -191,41 +219,41 @@ void castRays()
 
         if (ray_angle > PI/2 && ray_angle< 3*PI/2) //Looking down
         {
-            ray_cord_x= (((int)(player.x/80))*80) - 0.0001;
+            ray_cord_x= (((int)(player.x/tile.w))*tile.w) - 0.0001;
             ray_cord_y= (ray_cord_x - player.x) * negTg + player.y;
-            offset_x = -80;
+            offset_x = -tile.w;
             offset_y = offset_x * negTg;
         }
         if (ray_angle < PI/2 || ray_angle > 3*PI/2) //Looking up
         {
-            ray_cord_x= (((int)(player.x/80))*80) + 80;
+            ray_cord_x= (((int)(player.x/tile.w))*tile.w) + tile.w;
             ray_cord_y= (ray_cord_x - player.x) * negTg + player.y;
-            offset_x = 80;
+            offset_x = tile.w;
             offset_y = offset_x * negTg;
         }
         if (ray_angle == PI/2 || ray_angle == 3*PI/2) //Orthogonal up or down (means no horizontal collision possible)
         {
             ray_cord_x=player.x;
             ray_cord_y=player.y;
-            checkedDepth=8;
+            checkedDepth=viewDepth;
         }
         
             //Looking for vertical ray collision
         
-        while (checkedDepth < 8) {
-            map_normalized_cord_x = (int)(ray_cord_x/80);
-            map_normalized_cord_y = (int)(ray_cord_y/80);
+        while (checkedDepth < viewDepth) {
+            map_normalized_cord_x = (int)(ray_cord_x/tile.w);
+            map_normalized_cord_y = (int)(ray_cord_y/tile.w);
             int map_cords_multiplication = map_normalized_cord_x  * map_normalized_cord_y;
             
 
-            if ((map_normalized_cord_x>=0&&map_normalized_cord_x<=7)&&(map_normalized_cord_y>=0&&map_normalized_cord_y<=7))
+            if ((map_normalized_cord_x>=0&&map_normalized_cord_x<=(mapW-1))&&(map_normalized_cord_y>=0&&map_normalized_cord_y<=(mapH-1)))
             {
-                if (map[map_normalized_cord_x][map_normalized_cord_y] == 1)
+                if (map[map_normalized_cord_y][map_normalized_cord_x] == 1)
                 {
                     vert_hit_x=ray_cord_x;
                     vert_hit_y=ray_cord_y;
                     vert_ray_length=calcDist(player.x, player.y, vert_hit_x, vert_hit_y, ray_angle);
-                    checkedDepth=8;
+                    checkedDepth=viewDepth;
                 }
                 else
                 {
@@ -265,13 +293,14 @@ void castRays()
         if(fisheye_coefficent<0){fisheye_coefficent+=2*PI;}
         if(fisheye_coefficent>2*PI){fisheye_coefficent-=2*PI;}
         shortest_hit_length=shortest_hit_length*cos(fisheye_coefficent);
-        float horizontal_line=(64*640)/shortest_hit_length;
-        if(horizontal_line>640){horizontal_line=640;}
-        float display_offset = 320-horizontal_line/2;
+        float horizontal_line=(tile.w*HEIGHT)/shortest_hit_length;
+        if(horizontal_line>HEIGHT){horizontal_line=HEIGHT;}
+        float display_offset = (HEIGHT/2)-horizontal_line/2;
         
+        int segment_width = ((WIDTH/2)/ray_amount);
         line.h=horizontal_line;
-        line.w=8/resolution;
-        line.x=count*(8/resolution)+640;
+        line.w=segment_width;
+        line.x=count*(segment_width)+WIDTH/2;
         line.y=display_offset;
         SDL_RenderFillRect(renderer, &line);
         
@@ -291,10 +320,10 @@ bool collisionDetectionX(float addX)
     {
         xcoord = (player.x + player.radius + addX) / tile.w;
     }
-    int suppCordX = (player.x - 80) / 80;
-    int suppCordY = (player.y + 80) / 80;
-    int altsuppCordY = (player.y - 80) / 80;
-    if (map[xcoord][ycoord] == 0)
+    int suppCordX = (player.x - tile.w) / tile.w;
+    int suppCordY = (player.y + tile.w) / tile.w;
+    int altsuppCordY = (player.y - tile.w) / tile.w;
+    if (map[ycoord][xcoord] == 0)
     {
             return false;
         
@@ -303,11 +332,11 @@ bool collisionDetectionX(float addX)
     {
         if (addX > 0) {
             xcoord = (player.x/tile.w);
-            player.x = ((xcoord*80)- player.radius) + tile.w;
+            player.x = ((xcoord*tile.w)- player.radius) + tile.w;
         };
         if (addX < 0) {
             xcoord = (player.x / tile.w);
-            player.x = ((xcoord * 80)+ player.radius);
+            player.x = ((xcoord * tile.w)+ player.radius);
         };
         return true;
     }
@@ -324,7 +353,7 @@ bool collisionDetectionY(float addY)
     {
         ycoord = (player.y + player.radius + addY) / tile.h;
     }
-    if (map[xcoord][ycoord] == 0)
+    if (map[ycoord][xcoord] == 0)
     {
         return false;
     }
@@ -332,11 +361,11 @@ bool collisionDetectionY(float addY)
     {
         if (addY > 0) {
             ycoord = (player.y / tile.h);
-            player.y = ((ycoord * 80) - player.radius) + tile.w;
+            player.y = ((ycoord * tile.w) - player.radius) + tile.w;
         };
         if (addY < 0) {
             ycoord = (player.y / tile.h);
-            player.y = ((ycoord * 80) + player.radius);
+            player.y = ((ycoord * tile.w) + player.radius);
         };
         return true;
     }
@@ -465,7 +494,7 @@ void drawPlayer(SDL_Renderer* renderer, int x, int y, int radius, float rotation
     }
 }
 
-void drawMap(SDL_Renderer* renderer, int map[8][8],int map_width, int map_height,SDL_Rect tile_param,SDL_Color wall_col, SDL_Color grid_col)
+void drawMap(SDL_Renderer* renderer, int map[mapW][mapH],int map_width, int map_height,SDL_Rect tile_param,SDL_Color wall_col, SDL_Color grid_col)
 {
 
     for (int h = 0; h < map_width; h += tile_param.w)
@@ -473,7 +502,7 @@ void drawMap(SDL_Renderer* renderer, int map[8][8],int map_width, int map_height
 
         for (int i = 0; i < map_height; i += tile_param.h)
         {
-            if (map[h / 80][i / 80] == 1)
+            if (map[h / tile.w][i / tile.w] == 1)
             {
                 SDL_SetRenderDrawColor(renderer, wall_col.r, wall_col.g, wall_col.b, wall_col.a);
                 SDL_RenderFillRect(renderer, &tile_param);
@@ -482,10 +511,10 @@ void drawMap(SDL_Renderer* renderer, int map[8][8],int map_width, int map_height
             SDL_SetRenderDrawColor(renderer, grid_col.r, grid_col.g, grid_col.b, grid_col.a);
             SDL_RenderDrawRect(renderer, &tile_param);
 
-            tile_param.y += tile_param.h;
+            tile_param.x += tile_param.h;
         }
-        tile_param.x += tile_param.w;
-        tile_param.y = 0;
+        tile_param.y += tile_param.w;
+        tile_param.x = 0;
 
     }
 
@@ -499,7 +528,7 @@ void draw()
     SDL_SetRenderDrawColor(renderer, 20, 20, 20, 0);
     SDL_RenderFillRect(renderer,NULL);
 
-    drawMap(renderer,map,640,640,tile,wallCol,gridCol);
+    drawMap(renderer,map,(WIDTH/2),HEIGHT,tile,wallCol,gridCol);
     drawPlayer(renderer,player.x, player.y, player.radius,player.rotation);
     castRays();
     frameCount++;
